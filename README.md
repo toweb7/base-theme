@@ -10,6 +10,8 @@ This repository contains ScandiPWA Theme sources.
 
 ## Important note
 
+**This branch supports Magento 2.3.1 only**. For further version support see `2.x-stable` branch.
+
 This branch contains 2.x version, that requires different DB dump available on [2.0 branch](https://github.com/scandipwa/scandipwa-base/commits/2.0)
 
 It is important to ensure you are following the best practices and setting web-server root to `/pub` folder or adapt the build configs prefixing the pathes with `/pub` dir <https://github.com/scandipwa/base-theme/issues/134>
