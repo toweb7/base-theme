@@ -5,6 +5,12 @@
 
         <script>
             if ('serviceWorker' in navigator) {
+                let refreshing;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (refreshing) return;
+                    window.location.reload();
+                    refreshing = true;
+                });
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/sw.js');
                 });
