@@ -9,4 +9,5 @@
  * @link https://github.com/scandipwa/base-theme
  */
 
-export { default } from './SharedTransition.container';
+export * from './SharedTransition.action';
+export { default as SharedTransitionReducer } from './SharedTransition.reducer';

@@ -17,9 +17,11 @@ import { Router } from 'react-router';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createBrowserHistory } from 'history';
 
+
 import { HeaderAndFooterDispatcher } from 'Store/HeaderAndFooter';
 import PasswordChangePage from 'Route/PasswordChangePage';
 import NotificationList from 'Component/NotificationList';
+import SharedTransition from 'Component/SharedTransition';
 import NavigationTabs from 'Component/NavigationTabs';
 import { WishlistDispatcher } from 'Store/Wishlist';
 import NoMatchHandler from 'Route/NoMatchHandler';
@@ -233,11 +235,25 @@ class AppRouter extends PureComponent {
         return this.renderDefaultRouterContent();
     }
 
+    renderBeforeRouter() {
+        return (
+            <SharedTransition />
+        );
+    }
+
+    renderAfterRouter() {
+        return null;
+    }
+
     render() {
         return (
-            <Router history={ history }>
-                { this.renderRouterContent() }
-            </Router>
+            <>
+                { this.renderBeforeRouter() }
+                <Router history={ history }>
+                    { this.renderRouterContent() }
+                </Router>
+                { this.renderAfterRouter() }
+            </>
         );
     }
 }

@@ -33,6 +33,7 @@ import { NavigationReducer } from 'Store/Navigation';
 import { OverlayReducer } from 'Store/Overlay';
 import { PopupReducer } from 'Store/Popup';
 import { ConfigReducer } from 'Store/Config';
+import { SharedTransitionReducer } from 'Store/SharedTransition';
 import { LinkedProductsReducer } from 'Store/LinkedProducts';
 
 export const reducers = {
@@ -56,6 +57,7 @@ export const reducers = {
     PopupReducer,
     UrlRewritesReducer,
     ConfigReducer,
+    SharedTransitionReducer,
     LinkedProductsReducer
 };
 
