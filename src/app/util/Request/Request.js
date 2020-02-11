@@ -13,7 +13,7 @@
 import { getAuthorizationToken } from 'Util/Auth';
 import { hash } from './Hash';
 
-const GRAPHQL_URI = '/graphql';
+const GRAPHQL_URI = 'http://localhost:4000/graphql';
 
 /**
  * Append authorization token to header object
@@ -136,23 +136,9 @@ export const HTTP_201_CREATED = 201;
  * @param  {Number} cacheTTL Cache TTL (in seconds) for ServiceWorker to cache responses
  * @return {Promise<Request>} Fetch promise to GraphQL endpoint
  */
-export const executeGet = (queryObject, name, cacheTTL) => {
-    const { query, variables } = queryObject;
-    const uri = formatURI(query, variables, GRAPHQL_URI);
-
-    return parseResponse(new Promise((resolve) => {
-        getFetch(uri, name).then((res) => {
-            if (res.status === HTTP_410_GONE) {
-                putPersistedQuery(GRAPHQL_URI, query, cacheTTL).then((putResponse) => {
-                    if (putResponse.status === HTTP_201_CREATED) {
-                        getFetch(uri, name).then(res => resolve(res));
-                    }
-                });
-            } else {
-                resolve(res);
-            }
-        });
-    }));
+export const executeGet = (queryObjectL) => {
+    const { query, variables } = queryObjectL;
+    return parseResponse(postFetch(GRAPHQL_URI, query, variables));
 };
 
 /**
