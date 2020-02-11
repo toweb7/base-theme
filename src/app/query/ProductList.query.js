@@ -39,21 +39,23 @@ export class ProductListQuery {
 
     _getFilterArgumentMap() {
         return {
-            categoryIds: id => [`category_id: { eq: ${id} }`],
-            categoryUrlPath: url => [`category_url_path: { eq: ${url} }`],
+            categoryIds: id => [{ category_id: { eq: id } }],
+            categoryUrlPath: url => [{ category_url_path: { eq: url } }],
             priceRange: ({ min, max }) => {
                 const filters = [];
-                if (min) filters.push(`min_price: { gteq: ${min} }`);
-                if (max) filters.push(`max_price: { lteq: ${max} }`);
+                if (min) filters.push({ min_price: { gteq: min } });
+                if (max) filters.push({ max_price: { lteq: max } });
                 return filters;
             },
-            productsSkuArray: sku => [`sku: { in: [${sku}] }`],
-            productUrlPath: url => [`url_key: { eq: ${url}}`],
+            productsSkuArray: sku => [{ sku: { in: [sku] } }],
+            productUrlPath: url => [{ url_key: { eq: url } }],
             customFilters: (filters = {}) => Object.entries(filters).reduce((acc, [key, attribute]) => (
-                attribute.length ? [...acc, `${key}: { in: [ ${attribute.join(',')} ] } `] : acc
+                attribute.length
+                    ? [...acc, { [key]: { in: [attribute] } }]
+                    : acc
             ), []),
-            newToDate: date => [`news_to_date: { gteq: ${date} }`],
-            conditions: conditions => [`conditions: { eq: ${conditions} }`]
+            newToDate: date => [{ news_to_date: { gteq: date } }],
+            conditions: conditions => [{ conditions: { eq: conditions } }]
         };
     }
 
@@ -73,16 +75,32 @@ export class ProductListQuery {
             },
             sort: {
                 type: 'ProductSortInput!',
-                handler: ({ sortKey, sortDirection }) => `{${sortKey}: ${sortDirection || 'ASC'}}`
+                handler: ({ sortKey, sortDirection }) => {
+                    return ({ [sortKey]: sortDirection || 'ASC' });
+                }
             },
             filter: {
                 type: 'ProductFilterInput!',
-                handler: (options = {}) => `{${ Object.entries(options).reduce(
-                    (acc, [key, option]) => ((option && filterArgumentMap[key])
-                        ? [...acc, ...filterArgumentMap[key](option)]
-                        : acc
-                    ), []
-                ).join(',') }}`
+                handler: (options = {}) => {
+                    const reducedFilter = Object.entries(options).reduce((acc, [key, option]) => {
+                        const filterFunction = filterArgumentMap[key];
+
+                        if (!option || !filterArgumentMap[key]) {
+                            return acc;
+                        }
+
+                        const resultingFilter = filterFunction(option);
+
+                        resultingFilter.forEach((filter) => {
+                            // eslint-disable-next-line no-param-reassign
+                            acc = { ...acc, ...filter };
+                        });
+
+                        return acc;
+                    }, {});
+
+                    return Object.assign({}, reducedFilter);
+                }
             }
         };
     }
@@ -134,8 +152,7 @@ export class ProductListQuery {
             ...(!isVariant
                 ? [
                     'url_key',
-                    this._getReviewSummaryField(),
-                    this._getConfigurableProductFragment()
+                    this._getReviewSummaryField()
                 ]
                 : []
             ),
@@ -193,8 +210,7 @@ export class ProductListQuery {
 
     _getItemsField() {
         return new Field('items')
-            .addFieldList(this._getProductInterfaceFields())
-            .addField(this._getGroupedProductItems());
+            .addFieldList(this._getProductInterfaceFields());
     }
 
     _getProductField() {
