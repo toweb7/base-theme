@@ -47,7 +47,7 @@ export class ProductListQuery {
                 if (max) filters.push({ max_price: { lteq: max } });
                 return filters;
             },
-            productsSkuArray: sku => [{ sku: { in: [sku] } }],
+            productsSkuArray: sku => [{ sku: { in: sku } }],
             productUrlPath: url => [{ url_key: { eq: url } }],
             customFilters: (filters = {}) => Object.entries(filters).reduce((acc, [key, attribute]) => (
                 attribute.length
