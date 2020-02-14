@@ -23,7 +23,7 @@ export class MenuQuery {
      */
     getQuery({ identifier }) {
         return new Field('scandiwebMenu')
-            .addArgument('identifier', 'String!', identifier)
+            .addArgument('identifier', 'String!', identifier[0])
             .addFieldList(this._getMenuFields())
             .setAlias('menu');
     }
