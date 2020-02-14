@@ -43,8 +43,8 @@ export class ProductListQuery {
             categoryUrlPath: url => [{ category_url_path: { eq: url } }],
             priceRange: ({ min, max }) => {
                 const filters = [];
-                if (min) filters.push({ min_price: { gteq: min } });
-                if (max) filters.push({ max_price: { lteq: max } });
+                if (min) filters.push({ min_price: { gteq: min.toString() } });
+                if (max) filters.push({ max_price: { lteq: max.toString() } });
                 return filters;
             },
             productsSkuArray: sku => [{ sku: { in: sku } }],
