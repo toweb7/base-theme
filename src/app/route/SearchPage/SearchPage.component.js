@@ -25,7 +25,7 @@ export default class SearchPage extends CategoryPage {
         sortDirection: 'ASC',
         defaultPriceRange: { min: 0, max: 300 },
         previousPage: 0,
-        pageSize: 12
+        pageSize: 100
     };
 
     componentDidMount() {
