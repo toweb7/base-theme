@@ -84,7 +84,7 @@ export default class MenuOverlay extends PureComponent {
         return (
             <Image
               mix={ { block: 'MenuOverlay', elem: 'Image', mods: itemMods } }
-              src={ icon && media(icon) }
+              src={ icon }
               ratio="16x9"
             />
         );
