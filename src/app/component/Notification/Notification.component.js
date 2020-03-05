@@ -98,7 +98,7 @@ export default class Notification extends PureComponent {
             <div block="Notification" mods={ mods } ref={ this.notification }>
                 <button block="Notification" elem="Button" onClick={ this.hideNotification }>Close</button>
                 <p block="Notification" elem="Text">
-                    <span>This is demo store. This demo store. To try full version click </span>
+                    <span>This demo store. To try full version click </span>
                     <a href="https://demo.scandipwa.com/">here</a>
                 </p>
                 { this.renderDebug() }
