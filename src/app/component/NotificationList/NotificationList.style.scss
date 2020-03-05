@@ -17,6 +17,15 @@
     max-width: 550px;
     list-style: none;
 
+    a {
+        color: #fff;
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
     @include after-mobile {
         display: flex;
         flex-direction: column;

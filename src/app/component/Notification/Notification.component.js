@@ -17,8 +17,8 @@ import './Notification.style';
 
 // controls CSS animation speed
 export const ANIMATION_DURATION = 400;
-export const NOTIFICATION_LIFETIME = 1500;
-export const ERROR_NOTIFICATION_LIFETIME = 2500;
+export const NOTIFICATION_LIFETIME = 5000;
+export const ERROR_NOTIFICATION_LIFETIME = 5000;
 export const ERROR_TYPE = 'error';
 
 /**
@@ -92,10 +92,15 @@ export default class Notification extends PureComponent {
             is: isNotificationVisible ? 'opening' : 'closing'
         };
 
+        console.log(msgText);
+
         return (
             <div block="Notification" mods={ mods } ref={ this.notification }>
                 <button block="Notification" elem="Button" onClick={ this.hideNotification }>Close</button>
-                <p block="Notification" elem="Text">{ msgText }</p>
+                <p block="Notification" elem="Text">
+                    <span>This is demo store. This demo store. To try full version click </span>
+                    <a href="https://demo.scandipwa.com/">here</a>
+                </p>
                 { this.renderDebug() }
             </div>
         );
