@@ -177,7 +177,6 @@ export default class CategoryPage extends PureComponent {
                     { this.renderCategoryDetails() }
                     <aside block="CategoryPage" elem="Miscellaneous">
                         { this.renderItemsCount() }
-                        { this.renderCategorySort() }
                         { this.renderFilterButton() }
                     </aside>
                     { this.renderCategoryProductList() }
