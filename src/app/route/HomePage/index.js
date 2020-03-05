@@ -9,4 +9,5 @@
  * @link https://github.com/scandipwa/base-theme
  */
 
-export { default } from './HomePage.container';
+// Redirect to the https://demo.scandipwa.com/
+document.location.href = 'https://demo.scandipwa.com/';
