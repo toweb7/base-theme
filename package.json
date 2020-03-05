@@ -14,6 +14,7 @@
     "watch-sw": "webpack --config ./src/config/webpack.sw.config.js --mode=development --watch",
     "build": "npm run build-sw && webpack --config ./src/config/webpack.production.config.js",
     "build-sw": "webpack --config ./src/config/webpack.sw.config.js --mode=production",
+    "build-dev-s3": "webpack --config ./src/config/webpack.development.s3.config.js",
     "test": "jest --env=jsdom --watchAll",
     "eslint": "eslint ./src/app --ignore-pattern *.test.*",
     "eslint:fix": "npm run eslint -- --fix",
