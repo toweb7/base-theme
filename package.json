@@ -15,6 +15,8 @@
     "build": "npm run build-sw && webpack --config ./src/config/webpack.production.config.js",
     "build-sw": "webpack --config ./src/config/webpack.sw.config.js --mode=production",
     "build-dev-s3": "webpack --config ./src/config/webpack.development.s3.config.js",
+    "build-prod-s3": "npm run build-sw-s3 && webpack --config ./src/config/webpack.production.s3.config.js",
+    "build-sw-s3": "webpack --config ./src/config/webpack.sw.s3.config.js --mode=production",
     "test": "jest --env=jsdom --watchAll",
     "eslint": "eslint ./src/app --ignore-pattern *.test.*",
     "eslint:fix": "npm run eslint -- --fix",

@@ -17,18 +17,24 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MinifyPlugin = require('babel-minify-webpack-plugin');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
+const { InjectManifest } = require('workbox-webpack-plugin');
 
 const webmanifestConfig = require('./webmanifest.config');
 const BabelConfig = require('./babel.config');
+const { I18nPlugin, mapTranslationsToConfig } = require('./I18nPlugin');
 
 const projectRoot = path.resolve(__dirname, '..', '..');
-const publicRoot = path.resolve(projectRoot, 'build-s3', 'dev');
+const publicRoot = path.resolve(projectRoot, 'build-s3', 'prod');
 
-module.exports = {
+const staticVersion = Date.now();
+const publicPath = '/';
+
+const webpackConfig = ([lang, translation]) => ({
     resolve: {
         extensions: [
             '.js',
@@ -38,18 +44,15 @@ module.exports = {
         ]
     },
 
-    mode: 'development',
-
-    devtool: 'source-map',
+    cache: false,
 
     stats: {
         warnings: false
     },
 
-    entry: {
-        bundle: path.resolve(projectRoot, 'src', 'app', 'index.js'),
-        sw: path.resolve(projectRoot, 'src', 'sw', 'index.js')
-    },
+    entry: [
+        path.resolve(projectRoot, 'src', 'app', 'index.js')
+    ],
 
     module: {
         rules: [
@@ -66,27 +69,20 @@ module.exports = {
             {
                 test: /\.(sa|sc|c)ss$/,
                 use: [
-                    'css-hot-loader',
-                    MiniCssExtractPlugin.loader,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true
-                        }
-                    },
+                    'style-loader',
+                    'css-loader',
                     {
                         loader: 'postcss-loader',
                         options: {
-                            sourceMap: true,
-                            plugins: () => [autoprefixer]
+                            plugins: () => [
+                                autoprefixer,
+                                cssnano({
+                                    preset: ['default', { discardComments: { removeAll: true } }]
+                                })
+                            ]
                         }
                     },
-                    {
-                        loader: 'sass-loader',
-                        options: {
-                            sourceMap: true
-                        }
-                    },
+                    'sass-loader',
                     {
                         loader: 'sass-resources-loader',
                         options: {
@@ -107,65 +103,57 @@ module.exports = {
     },
 
     output: {
-        filename: '[name].js',
-        publicPath: '/',
+        filename: `${lang}.bundle.js`,
+        path: path.resolve(publicRoot),
         pathinfo: true,
-        globalObject: 'this', // fix for https://github.com/webpack/webpack/issues/6642
-        path: path.resolve(publicRoot)
-    },
-
-    devServer: {
-        watchContentBase: true,
-        publicPath: '/',
-        historyApiFallback: true,
-        port: 3003,
-        https: false,
-        overlay: true,
-        compress: true,
-        inline: true,
-        hot: true,
-        host: '0.0.0.0',
-        public: 'scandipwa.local',
-        allowedHosts: [
-            '.local'
-        ]
-    },
-
-    watchOptions: {
-        aggregateTimeout: 300,
-        poll: 1000
+        publicPath
     },
 
     plugins: [
-        new webpack.HotModuleReplacementPlugin(),
-
-        new webpack.DefinePlugin({
-            'process.env': {
-                REBEM_MOD_DELIM: JSON.stringify('_'),
-                REBEM_ELEM_DELIM: JSON.stringify('-'),
-                MAGENTO_VERSION: JSON.stringify('2.3.1')
-            }
-        }),
-
-        new webpack.ProvidePlugin({
-            __: path.resolve(path.join(__dirname, 'TranslationFunction')),
-            React: 'react'
+        new InjectManifest({
+            swSrc: path.resolve(publicRoot, 'sw-compiled.js'),
+            swDest: path.resolve(publicRoot, 'sw.js'),
+            exclude: [/\.phtml/]
         }),
 
         new HtmlWebpackPlugin({
-            template: path.resolve(projectRoot, 'src', 'public', 'index.development.html'),
+            template: path.resolve(projectRoot, 'src', 'public', 'index.production.html'),
             filename: 'index.html',
             inject: false,
-            publicPath: '/',
+            hash: true,
+            publicPath,
             chunksSortMode: 'none'
         }),
 
         new WebpackPwaManifest(webmanifestConfig(projectRoot)),
 
+        new webpack.DefinePlugin({
+            'process.env': {
+                REBEM_MOD_DELIM: JSON.stringify('_'),
+                REBEM_ELEM_DELIM: JSON.stringify('-'),
+                MAGENTO_STATIC_VERSION: staticVersion
+            }
+        }),
+
+        new webpack.ProvidePlugin({
+            React: 'react'
+        }),
+
+        new I18nPlugin({
+            translation
+        }),
+
         new CopyWebpackPlugin([
             { from: path.resolve(projectRoot, 'src', 'public', 'assets'), to: './assets' }
         ]),
 
-        new MiniCssExtractPlugin()
+        new MinifyPlugin({
+            removeConsole: false,
+            removeDebugger: true
+        }, {
+            comments: false
+        })
     ]
-};
+});
+
+module.exports = mapTranslationsToConfig(['en_US'], webpackConfig);
