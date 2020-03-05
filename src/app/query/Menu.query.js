@@ -24,6 +24,7 @@ export class MenuQuery {
     getQuery({ identifier }) {
         return new Field('scandiwebMenu')
             .addArgument('identifier', 'String!', identifier[0])
+            .addArgument('url_path', 'String!', window.location.pathname)
             .addFieldList(this._getMenuFields())
             .setAlias('menu');
     }
